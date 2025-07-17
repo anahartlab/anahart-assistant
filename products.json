@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Sarasvati",
+    "title": "Сарасвати — XL",
+    "description": "Полотно 2.3x1.5 метра, светится в ультрафиолете.",
+    "stock": "2 шт в Чебоксарах",
+    "price": "7800",
+    "link": "https://anahartlab.github.io/tapestries/instock.html#Sarasvati"
+  },
+  {
+    "name": "BuddhaFlame",
+    "title": "Будда Пламя — XS",
+    "description": "Размер 75x50 см, яркий флуоресцентный принт.",
+    "stock": "1 шт в Москве",
+    "price": "4200",
+    "link": "https://anahartlab.github.io/tapestries/instock.html#BuddhaFlame"
+  }
+]
