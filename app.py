@@ -96,18 +96,12 @@ async def chat(request: Request):
                 reply += f"  Подробнее: {p['link']}\n"
         return {"reply": reply}
 
-    # Если ничего не найдено, подключаем OpenRouter GPT
-    try:
-        gpt_reply = await ask_openrouter(user_message)
-        if not gpt_reply or gpt_reply.strip() in ["🤖 Нет ответа", ""]:
-            raise ValueError("Пустой ответ")
-        return {"reply": gpt_reply}
-    except Exception:
-        fallback_message = (
-            "🤖 В связи с большой загрузкой ИИ время ответа может быть увеличено.\n\n"
-            "Вы можете самостоятельно посмотреть товары здесь:\n"
-            "🌀 Одежда: https://anahartlab.github.io/wear.html\n"
-            "🌈 Полотна: https://anahartlab.github.io/tapestries/instock.html\n"
-            "📩 Или написать художнику напрямую в Telegram: https://t.me/anahart"
-        )
-        return {"reply": fallback_message}
+    # Если ничего не найдено
+    fallback_message = (
+        "🤖 В связи с большой загрузкой ИИ время ответа может быть увеличено.\n\n"
+        "Вы можете самостоятельно посмотреть товары здесь:\n"
+        "🌀 Одежда: https://anahartlab.github.io/wear.html\n"
+        "🌈 Полотна: https://anahartlab.github.io/tapestries/instock.html\n"
+        "📩 Или написать художнику напрямую в Telegram: https://t.me/anahart"
+    )
+    return {"reply": fallback_message}
