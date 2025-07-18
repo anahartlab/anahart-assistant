@@ -52,7 +52,7 @@ async def ask_openrouter(message: str):
         "Content-Type": "application/json",
     }
     data = {
-        "model": "openai/gpt-4o",
+        "model": "mistralai/mistral-7b-instruct",
         "messages": [{"role": "user", "content": message}],
     }
     async with httpx.AsyncClient() as client:
