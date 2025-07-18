@@ -114,5 +114,26 @@
       messages.scrollTop = messages.scrollHeight;
     }
   </script>
+</script>
+  <script>
+    window.addEventListener('load', () => {
+      const bodyText = document.body.innerText || "";
+      if (
+        bodyText.includes("502 Bad Gateway") ||
+        bodyText.includes("This service is currently unavailable") ||
+        bodyText.includes("Request ID")
+      ) {
+        document.body.innerHTML = `
+          <div style="padding: 20px; font-size: 1.2rem; max-width: 700px; margin: auto; background: #f9f9f9; border-radius: 10px; text-align: center;">
+            <p>🤖 ИИ устал и сейчас спит.</p>
+            <p>Вы можете самостоятельно посмотреть товары здесь:</p>
+            <p>🌀 <a href="https://anahartlab.github.io/wear.html" target="_blank">Одежда</a></p>
+            <p>🌈 <a href="https://anahartlab.github.io/tapestries/instock.html" target="_blank">Полотна</a></p>
+            <p>📩 <a href="https://t.me/anahart" target="_blank">Написать в Telegram</a></p>
+          </div>
+        `;
+      }
+    });
+  </script>
 </body>
 </html>
