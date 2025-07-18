@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import json
@@ -25,6 +25,12 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 async def serve_assistant():
     with open("static/assistant.html", "r", encoding="utf-8") as f:
         return HTMLResponse(content=f.read(), status_code=200)
+
+
+# Редирект с корня на /assistant
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/assistant")
 
 @app.post("/assistant")
 async def assistant_post():
