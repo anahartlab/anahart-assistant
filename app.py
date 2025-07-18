@@ -1,9 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from openai import OpenAI
 import os
-
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+import httpx
 
 app = FastAPI()
 
@@ -14,21 +12,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+
 @app.post("/api/chat")
 async def chat(request: Request):
     data = await request.json()
     message = data.get("message", "")
-    
-    chat_response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
+
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    json_data = {
+        "model": "gpt-3.5-turbo",
+        "messages": [
             {"role": "system", "content": "Ты — ассистент ANAHART. Отвечай вежливо и по делу."},
             {"role": "user", "content": message}
         ]
-    )
-    
-    return {"reply": chat_response.choices[0].message.content}
+    }
 
-@app.get("/")
-async def root():
-    return {"status": "ok", "message": "Ассистент работает! Отправь POST на /api/chat"}
+    async with httpx.AsyncClient() as client:
+        response = await client.post(OPENROUTER_URL, headers=headers, json=json_data)
+        response.raise_for_status()
+        data = response.json()
+
+    reply = data["choices"][0]["message"]["content"]
+    return {"reply": reply}
