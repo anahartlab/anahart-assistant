@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Ассистент ANAHART</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    #chat {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    #form {
+      display: flex;
+      border-top: 1px solid #444;
+    }
+    input {
+      flex-grow: 1;
+      padding: 10px;
+      border: none;
+      background: #222;
+      color: #fff;
+    }
+    button {
+      padding: 10px 15px;
+      background: #444;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="chat"></div>
+  <form id="form">
+    <input type="text" id="message" placeholder="Спроси что-нибудь..." autocomplete="off" />
+    <button type="submit">➤</button>
+  </form>
+
+  <script>
+    const chat = document.getElementById('chat');
+    const form = document.getElementById('form');
+    const input = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendMessage("🧑‍🎨", text);
+      input.value = '';
+
+      try {
+        const res = await fetch("https://anahart-assistant.onrender.com/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message: text })
+        });
+
+        const data = await res.json();
+        appendMessage("🤖", data.reply || "Ошибка в ответе.");
+      } catch (err) {
+        appendMessage("❌", "Ошибка соединения.");
+      }
+    });
+
+    function appendMessage(sender, text) {
+      const msg = document.createElement('div');
+      msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      chat.appendChild(msg);
+      chat.scrollTop = chat.scrollHeight;
+    }
+  </script>
+</body>
+</html>
