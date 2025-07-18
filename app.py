@@ -25,6 +25,10 @@ async def serve_assistant():
     with open("static/assistant.html", "r", encoding="utf-8") as f:
         return HTMLResponse(content=f.read(), status_code=200)
 
+@app.post("/assistant")
+async def assistant_post():
+    return {"status": "OK"}
+
 # Загружаем products.json один раз при старте
 with open("products.json", "r", encoding="utf-8") as f:
     products = json.load(f)
