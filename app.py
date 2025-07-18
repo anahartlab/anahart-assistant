@@ -52,21 +52,8 @@ async def ask_openrouter(message: str):
         "Content-Type": "application/json",
     }
     data = {
-        "model": "openai/gpt-4o",
-        "messages": [
-            {
-                "role": "system",
-                "content": (
-                    "Ты ассистент бренда ANAHART. "
-                    "ANAHART — это арт-бренд, создающий флуоресцентные полотна и одежду для любителей psytrance/goa. "
-                    "Ты помогаешь пользователям находить товары на страницах: "
-                    "https://anahartlab.github.io/wear.html и https://anahartlab.github.io/tapestries/instock.html. "
-                    "Если пользователь спрашивает про майки, панно, размеры или стиль — отвечай, что это есть у ANAHART. "
-                    "Ты можешь предлагать посмотреть эти товары и деликатно направлять на сайт."
-                )
-            },
-            {"role": "user", "content": message}
-        ],
+        "model": "mistralai/mistral-7b-instruct",
+        "messages": [{"role": "user", "content": message}],
     }
     async with httpx.AsyncClient() as client:
         response = await client.post(url, headers=headers, json=data)
