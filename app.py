@@ -28,3 +28,7 @@ async def chat(request: Request):
     )
     
     return {"reply": chat_response.choices[0].message.content}
+
+@app.get("/")
+async def root():
+    return {"status": "ok", "message": "Ассистент работает! Отправь POST на /api/chat"}
