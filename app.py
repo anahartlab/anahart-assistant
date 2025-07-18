@@ -62,14 +62,24 @@ async def ask_openrouter(message: str):
         content = json_data.get("choices", [{}])[0].get("message", {}).get("content", "🤖 Нет ответа")
         return content
 
+import re
+
+def normalize(text):
+    return re.sub(r"[^\w\s]", "", text.lower())
+
 def find_products(query: str):
-    query_lower = query.lower()
+    query_words = normalize(query).split()
     results = []
+
     for product in products:
-        if (query_lower in product.get("name", "").lower()
-            or query_lower in product.get("title", "").lower()
-            or query_lower in product.get("description", "").lower()):
+        searchable = " ".join([
+            normalize(product.get("name", "")),
+            normalize(product.get("title", "")),
+            normalize(product.get("description", ""))
+        ])
+        if all(word in searchable for word in query_words):
             results.append(product)
+
     return results[:5]
 
 @app.post("/api/chat")
