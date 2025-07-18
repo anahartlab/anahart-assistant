@@ -89,8 +89,14 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text })
       });
-      const data = await res.json();
-      messages.innerHTML += '<div><b>Бот:</b> ' + data.reply + '</div>';
+      let data;
+      try {
+        data = await res.json();
+      } catch (e) {
+        data = { reply: "❌ Ошибка чтения ответа сервера." };
+      }
+      const reply = data?.reply || "🤖 Нет ответа";
+      messages.innerHTML += '<div><b>Бот:</b> ' + reply + '</div>';
       messages.scrollTop = messages.scrollHeight;
     }
   </script>

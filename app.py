@@ -33,8 +33,11 @@ async def root():
     return RedirectResponse(url="/assistant")
 
 @app.post("/assistant")
-async def assistant_post():
-    return {"status": "OK"}
+async def assistant_post(request: Request):
+    data = await request.json()
+    user_message = data.get("message", "")
+    gpt_reply = await ask_openrouter(user_message)
+    return {"reply": gpt_reply}
 
 # Загружаем products.json один раз при старте
 with open(os.path.join("static", "products.json"), "r", encoding="utf-8") as f:
@@ -55,7 +58,9 @@ async def ask_openrouter(message: str):
     async with httpx.AsyncClient() as client:
         response = await client.post(url, headers=headers, json=data)
         response.raise_for_status()
-        return response.json()["choices"][0]["message"]["content"]
+        json_data = response.json()
+        content = json_data.get("choices", [{}])[0].get("message", {}).get("content", "🤖 Нет ответа")
+        return content
 
 def find_products(query: str):
     query_lower = query.lower()
