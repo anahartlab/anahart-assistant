@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import json
 import os
+import httpx
 
 app = FastAPI()
 
@@ -33,6 +34,23 @@ async def assistant_post():
 with open(os.path.join("static", "products.json"), "r", encoding="utf-8") as f:
     products = json.load(f)
 
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+
+async def ask_openrouter(message: str):
+    url = "https://openrouter.ai/api/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+        "Content-Type": "application/json",
+    }
+    data = {
+        "model": "openai/gpt-4o",
+        "messages": [{"role": "user", "content": message}],
+    }
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url, headers=headers, json=data)
+        response.raise_for_status()
+        return response.json()["choices"][0]["message"]["content"]
+
 def find_products(query: str):
     query_lower = query.lower()
     results = []
@@ -57,5 +75,6 @@ async def chat(request: Request):
                 reply += f"  Подробнее: {p['link']}\n"
         return {"reply": reply}
 
-    # Если ничего не найдено, заглушка (позже можно подключить AI)
-    return {"reply": "Извините, я ничего не нашёл по вашему запросу."}
+    # Если ничего не найдено, подключаем OpenRouter GPT
+    gpt_reply = await ask_openrouter(user_message)
+    return {"reply": gpt_reply}
