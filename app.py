@@ -1,9 +1,10 @@
 import httpx
 import os
 from dotenv import load_dotenv
-load_dotenv()
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+
+load_dotenv()
 
 app = FastAPI()
 
@@ -33,7 +34,11 @@ async def chat(request: Request):
     }
 
     async with httpx.AsyncClient() as client:
-        response = await client.post("https://openrouter.ai/v1/chat/completions", headers=headers, json=body)
+        response = await client.post(
+            "https://openrouter.ai/api/v1/chat/completions",  # ← правильный URL
+            headers=headers,
+            json=body
+        )
         response.raise_for_status()
         reply = response.json()["choices"][0]["message"]["content"]
 
