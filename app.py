@@ -30,7 +30,7 @@ async def assistant_post():
     return {"status": "OK"}
 
 # Загружаем products.json один раз при старте
-with open("products.json", "r", encoding="utf-8") as f:
+with open(os.path.join("static", "products.json"), "r", encoding="utf-8") as f:
     products = json.load(f)
 
 def find_products(query: str):
