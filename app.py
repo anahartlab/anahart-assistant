@@ -1,7 +1,8 @@
 import json
 import httpx
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 OPENROUTER_API_KEY = "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"
 
@@ -14,9 +15,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Загружаем товары из products.json
+# Загружаем товары из products.json при старте сервера
 with open("products.json", "r", encoding="utf-8") as f:
     products = json.load(f)
+
+class ChatRequest(BaseModel):
+    message: str
 
 def find_products(query: str):
     query_lower = query.lower()
@@ -29,9 +33,8 @@ def find_products(query: str):
     return results[:5]
 
 @app.post("/api/chat")
-async def chat(request: Request):
-    data = await request.json()
-    user_message = data.get("message", "")
+async def chat(request_data: ChatRequest):
+    user_message = request_data.message
 
     found = find_products(user_message)
     if found:
