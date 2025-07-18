@@ -18,9 +18,13 @@ app.add_middleware(
 async def chat(request: Request):
     data = await request.json()
     message = data.get("message", "")
-    response = client.chat.completions.create(
+    
+    chat_response = client.chat.completions.create(
         model="gpt-3.5-turbo",
-        messages=[{"role": "system", "content": "Ты — ассистент ANAHART. Отвечай вежливо и по делу."},
-                  {"role": "user", "content": message}]
+        messages=[
+            {"role": "system", "content": "Ты — ассистент ANAHART. Отвечай вежливо и по делу."},
+            {"role": "user", "content": message}
+        ]
     )
-    return {"reply": response.choices[0].message.content.strip()}
+    
+    return {"reply": chat_response.choices[0].message.content}
