@@ -36,8 +36,33 @@ async def root():
 async def assistant_post(request: Request):
     data = await request.json()
     user_message = data.get("message", "")
-    gpt_reply = await ask_openrouter(user_message)
-    return {"reply": gpt_reply}
+
+    # Получаем ключевые слова через ИИ
+    keywords = await extract_keywords(user_message)
+    if not keywords:
+        keywords = user_message.split()
+
+    # Ищем по ключевым словам
+    query = " ".join(keywords)
+    found = find_products(query)
+
+    if found:
+        reply = "Вот что я нашёл:\n"
+        for p in found:
+            reply += f"- {p['title']} (в наличии: {p.get('stock', 'нет данных')})\n"
+            if "link" in p:
+                reply += f"  Подробнее: {p['link']}\n"
+        return {"reply": reply}
+
+    # Если ничего не найдено — шаблон
+    fallback_message = (
+        "🤖 В связи с большой загрузкой ИИ время ответа может быть увеличено.\n\n"
+        "Вы можете самостоятельно посмотреть товары здесь:\n"
+        "🌀 Одежда: https://anahartlab.github.io/wear.html\n"
+        "🌈 Полотна: https://anahartlab.github.io/tapestries/instock.html\n"
+        "📩 Или написать художнику напрямую в Telegram: https://t.me/anahart"
+    )
+    return {"reply": fallback_message}
 
 # Загружаем products.json один раз при старте
 with open(os.path.join("static", "products.json"), "r", encoding="utf-8") as f:
@@ -45,22 +70,33 @@ with open(os.path.join("static", "products.json"), "r", encoding="utf-8") as f:
 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-async def ask_openrouter(message: str):
+
+# Извлечение ключевых слов из сообщения пользователя через OpenRouter
+async def extract_keywords(message: str) -> list[str]:
     url = "https://openrouter.ai/api/v1/chat/completions"
     headers = {
         "Authorization": f"Bearer {OPENROUTER_API_KEY}",
         "Content-Type": "application/json",
     }
+    prompt = (
+        "Извлеки ключевые слова из следующего запроса пользователя для поиска по базе данных товаров.\n"
+        "Ответ верни как список слов, без лишнего текста. Пример: ['футболка', 'будда']\n\n"
+        f"Запрос: {message}"
+    )
     data = {
         "model": "mistralai/mistral-7b-instruct",
-        "messages": [{"role": "user", "content": message}],
+        "messages": [{"role": "user", "content": prompt}],
     }
     async with httpx.AsyncClient() as client:
         response = await client.post(url, headers=headers, json=data)
         response.raise_for_status()
         json_data = response.json()
-        content = json_data.get("choices", [{}])[0].get("message", {}).get("content", "🤖 Нет ответа")
-        return content
+        content = json_data.get("choices", [{}])[0].get("message", {}).get("content", "")
+        try:
+            keywords = eval(content.strip())
+            return keywords if isinstance(keywords, list) else []
+        except:
+            return []
 
 import re
 
