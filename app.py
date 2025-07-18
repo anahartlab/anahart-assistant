@@ -58,9 +58,9 @@ async def assistant_post(request: Request):
     fallback_message = (
         "🤖 В связи с большой загрузкой ИИ время ответа может быть увеличено.\n\n"
         "Вы можете самостоятельно посмотреть товары здесь:\n"
-        "🌀 Одежда: https://anahartlab.github.io/wear.html\n"
-        "🌈 Полотна: https://anahartlab.github.io/tapestries/instock.html\n"
-        "📩 Или написать художнику напрямую в Telegram: https://t.me/anahart"
+        "🌀 <a href=\"https://anahartlab.github.io/wear.html\" target=\"_blank\">Одежда</a>\n"
+        "🌈 <a href=\"https://anahartlab.github.io/tapestries/instock.html\" target=\"_blank\">Полотна</a>\n"
+        "📩 <a href=\"https://t.me/anahart\" target=\"_blank\">Написать в Telegram</a>"
     )
     return {"reply": fallback_message}
 
