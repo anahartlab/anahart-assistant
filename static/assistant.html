@@ -90,10 +90,24 @@
         body: JSON.stringify({ message: text })
       });
       let data;
-      try {
-        data = await res.json();
-      } catch (e) {
-        data = { reply: "❌ Ошибка чтения ответа сервера." };
+      if (!res.ok) {
+        data = {
+          reply: "⚠️ В связи с большой загрузкой ИИ, время ожидания ответа может быть увеличено.\n" +
+                 "🌀 Одежда: https://anahartlab.github.io/wear.html\n" +
+                 "🌀 Полотна: https://anahartlab.github.io/tapestries/instock.html\n" +
+                 "💬 Telegram: https://t.me/anahart"
+        };
+      } else {
+        try {
+          data = await res.json();
+        } catch (e) {
+          data = {
+            reply: "⚠️ В связи с большой загрузкой ИИ, время ожидания ответа может быть увеличено.\n" +
+                   "🌀 Одежда: https://anahartlab.github.io/wear.html\n" +
+                   "🌀 Полотна: https://anahartlab.github.io/tapestries/instock.html\n" +
+                   "💬 Telegram: https://t.me/anahart"
+          };
+        }
       }
       const reply = data?.reply || "🤖 Нет ответа";
       messages.innerHTML += '<div><b>Бот:</b> ' + reply + '</div>';
