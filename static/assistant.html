@@ -63,6 +63,20 @@
   </div>
 
   <script>
+    let products = [];
+
+    async function loadProducts() {
+      try {
+        const res = await fetch('/static/products.json');
+        products = await res.json();
+        console.log("Товары загружены:", products);
+      } catch (error) {
+        console.error("Ошибка загрузки товаров:", error);
+      }
+    }
+
+    loadProducts();
+
     async function sendMessage() {
       const input = document.getElementById('user-input');
       const messages = document.getElementById('chat-messages');
