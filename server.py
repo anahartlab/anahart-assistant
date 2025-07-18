@@ -4,7 +4,7 @@ import os
 import openai
 
 app = Flask(__name__)
-openai.api_key = os.environ.get("OPENAI_API_KEY")
+openai.api_key = os.environ.get("OPENROUTER_API_KEY")
 
 # Загружаем товары
 with open("products.json", "r", encoding="utf-8") as f:
